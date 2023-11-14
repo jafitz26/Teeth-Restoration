@@ -18,7 +18,7 @@ border = 2
 # old command
 # split_image_cmd = 'ffmpeg -hwaccel cuvid -hide_banner -loglevel quiet -y -i {} -r 25 {}/%05d.png'
 #new command. Might want to include the -hwaccel cuvid flag if you have a GPU. Changed it here because it was causing problems on colab
-split_image_cmd = 'ffmpeg -hide_banner -loglevel quiet -y -i {} -r 25 {}/%05d.png'
+split_image_cmd = 'ffmpeg -hide_banner -loglevel quiet -y -i {} {}/%05d.png'
 split_wav_cmd = 'ffmpeg -hwaccel cuvid -hide_banner -loglevel quiet -y -i {} -async 1 -ac 1 -vn -acodec pcm_s16le {}'
 #change device to 'cuda:0' for production, or if you want to use GPU
 fa_3d = face_alignment.FaceAlignment(face_alignment.LandmarksType.THREE_D, flip_input=False, device='cuda:0')
