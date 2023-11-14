@@ -8,6 +8,20 @@ that correspond to given arbitrary talking face videos.
 
 <img src='./docs/img/HDTR-Net.png' width=880>
 
+### Arguments
+
+Here's a breakdown of what each argument controls:
+
+--mask_channel: This argument specifies the channel of the mouth mask and mouth contour. The default value is 6. In the context of image processing, a channel refers to the grayscale image of the same size as a color image, made up of just one of these primary colors. For instance, an image from a standard digital camera will have three channels: red, green, and blue.
+
+--ref_channel: This argument specifies the reference channel. The default value is 3. The exact meaning of "reference channel" would depend on the context of your project, but it generally refers to a specific channel in an image or data set that's used as a reference or comparison point for other data.
+
+--mouth_size: This argument specifies the size of the cropped mouth region image. The default value is 96. This likely refers to the size (in pixels) of the square region of interest around the mouth in an image.
+
+--test_batch_size: This argument specifies the size of the test batch. The default value is 8. In the context of machine learning, a batch is a subset of the dataset used for training or testing. The batch size is the number of samples processed before the model is updated.
+
+--test_workers: This argument specifies the number of workers to run the test. The default value is 0. In the context of PyTorch (a popular machine learning library in Python), a worker refers to a subprocess that loads data from disk and puts it on the CPU memory. The number of workers determines how many subprocesses to use for data loading. 0 means that the data will be loaded in the main process.
+
 ### Recommondation of our works
 This repo is maintaining by authors, if you have any questions, please contact us at issue tracker.
 
