@@ -15,9 +15,13 @@ from torch.utils.data import DataLoader
 
 border = 2
 
-split_image_cmd = 'ffmpeg -hwaccel cuvid -hide_banner -loglevel quiet -y -i {} -r 25 {}/%05d.png'
-split_wav_cmd = 'ffmpeg -hwaccel cuvid -hide_banner -loglevel quiet -y -i {} -async 1 -ac 1 -vn -acodec pcm_s16le -ar 16000 {}'
-fa_3d = face_alignment.FaceAlignment(face_alignment.LandmarksType._3D, flip_input=False, device='cuda:0')
+# old command
+# split_image_cmd = 'ffmpeg -hwaccel cuvid -hide_banner -loglevel quiet -y -i {} -r 25 {}/%05d.png'
+#new command. Might want to include the -hwaccel cuvid flag if you have a GPU. Changed it here because it was causing problems on colab
+split_image_cmd = 'ffmpeg -hide_banner -loglevel quiet -y -i {} -r 25 {}/%05d.png'
+split_wav_cmd = 'ffmpeg -hwaccel cuvid -hide_banner -loglevel quiet -y -i {} -async 1 -ac 1 -vn -acodec pcm_s16le {}'
+#change device to 'cuda:0' for production, or if you want to use GPU
+fa_3d = face_alignment.FaceAlignment(face_alignment.LandmarksType.THREE_D, flip_input=False, device='cuda:0')
 
 def load_model(args):
     Model = Generator(args)
@@ -110,6 +114,7 @@ def prepare_data(full_frame_path, temp_dir):
     # Detect face landmarks 
     print(f'==> detect face landmarks ...')
     frame_list = sorted(os.listdir(full_frame_path))
+    print(f'==> total {len(frame_list)} frames')
 
     landmarks_dict = {}
     for index in tqdm(frame_list):
@@ -191,8 +196,8 @@ def save_results(SR_images, path, index):
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input_video', type=str, default='/data/users/yongyuanli/workspace/mydata1/ICASSP/sample/video/ABOUT_00001.mp4', help='Input video to clear mouth region')
-    parser.add_argument('--temp_dir', type=str, default='./test_result', help='Temp directory to save output')
+    parser.add_argument('--input_video', type=str, default='./video_input.mp4', help='Input video to clear mouth region')
+    parser.add_argument('--temp_dir', type=str, default='./results', help='Temp directory to save output')
     parser.add_argument('--model_path', type=str, default='./checkpoint/lip-clarity-model.pth', 
                         help='Root path of pretrained SR model')
     
@@ -296,11 +301,13 @@ if __name__=="__main__":
         # seamless
         mixed_image = cv2.seamlessClone(souce_img, full_image, mask, (x0+w//2, y0+h//2), cv2.NORMAL_CLONE)
 
+        print('result_path', result_path)
         # full_image[y0:y1, x0:x1, :] = out_image
         finout_image_path = join(result_path, 'fin_out')
         os.makedirs(finout_image_path, exist_ok=True)
         cv2.imwrite(join(finout_image_path, index), mixed_image)
-        
+    
+
     os.system(synthesis_CMD.format(wav_path, finout_image_path, result_path, "result", video_basename))
     os.system(merged_CMD.format(full_frame_path, finout_image_path, wav_path, result_path, video_basename))
     print(f"[info]: Result videos is saved in {result_path}")
